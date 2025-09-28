@@ -1,0 +1,11 @@
+.footer {
+    color: white;
+    background-color: green;
+}
+
+.blog {
+    padding: 10px;
+    border: solid;
+    border-width: 1px;
+    margin-bottom: 5px;
+}
