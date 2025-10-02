@@ -1,7 +1,7 @@
 import Blog from './Blog';
 import { useSelector } from 'react-redux';
 
-const BlogsLista = ({ handlelikeBlog, handleEliminarBlog }) => {
+const BlogsLista = ({ handlelikeBlog, handleEliminarBlog, usuario }) => {
     const blogs = useSelector(state => state.blogs)
     const { valor, tipo } = useSelector(state => state.busqueda)
 
@@ -28,6 +28,7 @@ const BlogsLista = ({ handlelikeBlog, handleEliminarBlog }) => {
                 blog={blog}
                 handlelikeBlog={handlelikeBlog}
                 handleEliminarBlog={handleEliminarBlog}
+                usuario={usuario}
                 />
             ))}
         </div>

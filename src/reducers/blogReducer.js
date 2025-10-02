@@ -1,75 +1,45 @@
 // Reducer para manejar blogs
-const estadoInicial = [
-  {
-    titulo: 'La forma de cuidar a tu perro',
-    autor: 'Roberto Cardenas',
-    url: 'www.blogdog',
-    likes: 0,
-    id: 1
-  },
-  {
-    titulo: 'Pastel de Guayaba. Aprenda a cocinarlo',
-    autor: 'Ana Laura F.',
-    url: 'www.cook',
-    likes: 0,
-    id: 2
-  }
-]
+import { createSlice } from '@reduxjs/toolkit'
 
-const blogReducer = (state = estadoInicial, action) => {
-  switch (action.type) {
-    // Acción para crear un nuevo blog
-    case 'NUEVO_BLOG':
-      // Retorna un nuevo array sin mutar el estado original
-      return [...state, action.payload] // Inmutable usando spread syntax
-
+// Slice para manejar las acciones en los blogs
+const blogsSlice = createSlice({
+  name: 'blogs',
+  initialState: [],
+  reducers: {
     // Acción para dar like a un blog
-    case 'LIKE_BLOG': {
-      const id = action.payload.id
-      const blogLikear = state.find(b => b.id === id)
-
-      // Creamos un nuevo objeto con los likes incrementados
-      const blogLike = {
-        ...blogLikear,
-        likes: blogLikear.likes + 1,
-      }
-
-      // Devolvemos un nuevo array reemplazando solo el blog que recibió el like
+    blogLike(state, action) {
+      const blogActualizado = action.payload
       return state.map(blog =>
-        blog.id !== id ? blog : blogLike
+        blog.id !== blogActualizado.id ? blog : blogActualizado
       )
-    }
-
+    },
     // Acción para eliminar un blog
-    case 'ELIMINAR_BLOG': {
-      const id = action.payload.id
-      // Devuelve esl estado excluyendo el blog eliminado
-      return state.filter(blog => blog.id !==id)
+    eliminarBlog(state, action) {
+      const id = action.payload
+      // Devuelve el estado excluyendo el blog eliminado
+      return state.filter(blog => blog.id !== id)
+    },
+    // Acción para actualizar un blog
+    // Reemplaza un blog existente por id
+    actualizarBlog(state, action) {
+      const blogActualizado = action.payload
+      return state.map(blog =>
+        blog.id !== blogActualizado.id ? blog : blogActualizado
+      )
+    },
+    // Acción para añadir un objeto de un blog
+    appendBlog(state, action) {
+      state.push(action.payload)
+    },
+    // Acción para reemplazar el array de blogs
+    setBlogs(state, action) {
+      return action.payload
     }
-
-    // Acción para actualizar el blog si existe el titulo
-    case 'ACTUALIZAR_BLOG': {
-      const { titulo } = action.payload
-      // Busca si el titulo del blog existe
-      const existeTitulo = state.find(blog => blog.titulo === titulo)
-
-      if (existeTitulo) {
-        // Reemplaza
-        return state.map(blog =>
-          blog.titulo === titulo ? action.payload : blog
-        )
-      } else {
-        // Si no existe, lo agrega
-        return [...state, action.payload]
-      }
-    }
-
-    // Estado por defecto (ninguna acción reconocida)
-    default:
-      return state
   }
-}
+})
 
-export default blogReducer
+export const { blogLike, eliminarBlog, actualizarBlog, appendBlog, setBlogs } = blogsSlice.actions
+
+export default blogsSlice.reducer
 
 

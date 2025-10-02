@@ -1,13 +1,19 @@
-import { createStore, combineReducers } from 'redux'
+import { configureStore } from '@reduxjs/toolkit'
 import blogReducer from './reducers/blogReducer'
 import busquedaReducer from './reducers/buscarReducer'
+import notificacionReducer from './reducers/notificacionReducer'
+import loginReducer from './reducers/loginReducer'
+import usuarioReducer from './reducers/usuarioReducer'
 
-const reducers = combineReducers({
-    blogs: blogReducer,
-    busqueda: busquedaReducer 
+export const store = configureStore({
+    reducer: {
+       blogs: blogReducer,
+       busqueda: busquedaReducer,
+       notificacion: notificacionReducer,
+       usuario: loginReducer,
+       usuarios: usuarioReducer
+    }
 })
-
-export const store = createStore(reducers)
 
 console.log(store.getState())
 

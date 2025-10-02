@@ -1,27 +1,26 @@
+import { createSlice } from "@reduxjs/toolkit"
+
 const estadoInicial = {
     valor: '',
     tipo: 'TITULO' // Por defecto busca titulos
 }
 
-const busquedaReducer = (state = estadoInicial, action) => {
-    switch (action.type) {
+// Slice para manejar la busqueda de blogs
+const busquedaSlice = createSlice({
+    name: 'busqueda',
+    initialState: estadoInicial,
+    reducers: {
         // Acción para buscar un blog
-        case 'BUSCAR_BLOG': 
-        return {
-            ...state,
-            valor: action.payload.valor
+        buscarBlog(state, action) {
+            state.valor = action.payload
+        },
+        // Acción para buscar un blog por categoria
+        buscarPor(state, action) {
+            state.tipo = action.payload
         }
+    }
+})
 
-        // Acción para buscar un blog por autor o titulo
-        case 'BUSCAR_POR':
-            return {
-                ...state,
-                tipo: action.payload.tipo
-            }
 
-        default:
-        return state 
-  }
-}
-
-export default busquedaReducer
+export const { buscarBlog, buscarPor } = busquedaSlice.actions
+export default busquedaSlice.reducer

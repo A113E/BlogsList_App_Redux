@@ -1,0 +1,7 @@
+{
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "editor.formatOnSave": false, 
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": true },
+  "json.schemaDownload.enable": false
+}

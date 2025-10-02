@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { buscarBlog, buscarPor } from '../../actions/buscarAction'
+import { buscarBlog, buscarPor } from '../../reducers/buscarReducer'
 
 const BuscarBlog = ({ valor }) => {
     const dispatch = useDispatch()

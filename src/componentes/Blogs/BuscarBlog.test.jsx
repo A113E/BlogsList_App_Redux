@@ -61,8 +61,8 @@ describe('BuscarBlog.jsx', () => {
         const accion = store.getActions()
         expect(accion.length).toBeGreaterThan(0) // Confirma que se despachen todas las acciones
         expect(accion.at(-1)).toEqual({ // Se toma la ultima accion que corresponde al input final "Render busqueda..."
-           type: 'BUSCAR_BLOG',
-           payload: { valor: 'Render busqueda...'}
+           type: 'busqueda/buscarBlog',
+           payload: 'Render busqueda...'
         })
     })
 
@@ -87,8 +87,8 @@ describe('BuscarBlog.jsx', () => {
         const accion = store.getActions()
         expect(accion).toHaveLength(1)
         expect(accion[0]).toEqual({
-            type: 'BUSCAR_POR',
-            payload: { tipo: 'TITULO' }
+            type: 'busqueda/buscarPor',
+            payload: 'TITULO'
         })
     })
 
@@ -113,8 +113,8 @@ describe('BuscarBlog.jsx', () => {
         const accion = store.getActions()
         expect(accion).toHaveLength(1)
         expect(accion[0]).toEqual({
-            type: 'BUSCAR_POR',
-            payload: { tipo: 'AUTOR' }
+            type: 'busqueda/buscarPor',
+            payload: 'AUTOR'
         })
     })
 })

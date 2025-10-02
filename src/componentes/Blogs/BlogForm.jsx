@@ -1,32 +1,63 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { crearBlog, actualizarBlog } from '../../actions/blogActions';
+import { crearBlog, blogActualizado } from '../../actions/blogActions';
+import { mostrarMensaje } from '../../actions/notificacionAction';
+import { useCampo } from '../../hooks/useCampo';
 
 const BlogForm = () => {
     const dispatch = useDispatch() // Cambiar el estado con las acciones
     const blogs = useSelector(state => state.blogs) // Llama a la lista de blogs
 
-    // Función para añadir un nuevo blog
-    const añadirBlog = (e) => {
-    e.preventDefault()
-    const blogObjeto = {
-      titulo: e.target.titulo.value,
-      autor: e.target.autor.value,
-      url: e.target.url.value
+    // Campos del formulario
+    const titulo = useCampo('text')
+    const autor = useCampo('text')
+    const url = useCampo('text')
+
+    // Instancia para limpiar el formulario
+    const limpiarFormulario = () => {
+      titulo.limpiar()
+      autor.limpiar()
+      url.limpiar()
     }
 
+    // Función para añadir un nuevo blog
+    const añadirBlog = async (e) => {
+    e.preventDefault()
+    const blogObjeto = {
+      titulo: titulo.value,
+      autor: autor.value,
+      url: url.value
+    }
+
+    try {  
     // Verificar si existe un blog con ese titulo
     const blogExistente = blogs.find(blog => blog.titulo === blogObjeto.titulo)
 
     if (blogExistente) {
       const confirmar = window.confirm(`Ya existe un blog con ese título: "${blogObjeto.titulo}" ¿Desea reemplazarlo?`)
       if (confirmar) {
-        dispatch(actualizarBlog(blogObjeto))
+        await dispatch(blogActualizado({ ...blogObjeto, id: blogExistente.id }))
+        dispatch(mostrarMensaje({
+          mensaje: 'Blog actualizado correctamente ✅',
+          tipo: 'exito'
+        }))
       }
     } else { 
         dispatch(crearBlog(blogObjeto))
+        dispatch(mostrarMensaje({
+          mensaje: 'Blog agregado correctamente ✅',
+          tipo: 'exito'
+        }))
     }
 
-    e.target.reset() // Reset formulario
+    limpiarFormulario() // Reset formulario
+
+      } catch (error) {
+        console.error('Error al añadir el blog', error)
+        dispatch(mostrarMensaje({
+          mensaje: '❌ Error al añadir el blog',
+          tipo: 'error'
+        }))
+      }
     }
 
     return (
@@ -35,15 +66,15 @@ const BlogForm = () => {
             <form onSubmit={añadirBlog}>
         <div>
           Titulo:
-          <input name='titulo' id='titulo-input'/>
+          <input {...titulo.inputProps} id='titulo-input'/>
         </div>
         <div>
           Autor:
-          <input name='autor' id='autor-input'/>
+          <input {...autor.inputProps} id='autor-input'/>
         </div>
         <div>
           URL:
-          <input name='url' id='url-input'/>
+          <input {...url.inputProps} id='url-input'/>
         </div>
         <button type='submit'> Añadir </button>
       </form>
