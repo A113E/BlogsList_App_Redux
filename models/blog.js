@@ -24,6 +24,10 @@ const blogSchema = new mongoose.Schema({
     usuario: { // Matriz ID que hace referncia a los usuarios
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Usuario'
+    },
+    comentario: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comentario'
     }
 })
 

@@ -1,0 +1,8 @@
+POST http://localhost:3003/api/comentarios/68cf65b63fdb830a2dbc1ecb
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21icmVfdXN1YXJpbyI6InJvb3QiLCJpZCI6IjY4YmRmZDBkNmRiOGIxYWRmN2YwNjYzNCIsImlhdCI6MTc1OTQ1Nzk1OSwiZXhwIjoxNzU5NDYxNTU5fQ.DsCGMzgQHzhY9iTpOHEN1dg0cKddzQ5ElJkziVANtVw
+
+{
+  "comentario": "Excelente post, aprendí mucho!",
+  "likes": 0
+}

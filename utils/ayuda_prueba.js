@@ -1,6 +1,7 @@
 // Modulo para definir funciones de prueba
 const Blog = require('../models/blog')
 const Usuario = require('../models/usuario')
+const Comentario = require('../models/comentario')
 const bcrypt = require('bcrypt') // Para encriptar contraseñas
 
 const blogsIniciales = [
@@ -33,6 +34,24 @@ const usuariosIniciales = async () => {
             passwordHash
         }
     ]
+}
+
+// Comentarios iniciales
+const comentariosIniciales = [
+  {
+    comentario: 'Primer comentario inicial',
+    likes: 2
+  },
+  {
+    comentario: 'Segundo comentario inicial',
+    likes: 5
+  }
+]
+
+// Devuelve todos los comentarios de la BD
+const comentariosEnBd = async () => {
+  const comentarios = await Comentario.find({})
+  return comentarios.map(c => c.toJSON())
 }
 
 // Función que genera un ID válido de MongoDB que no existe en la colección (para pruebas -- 404 No found)
@@ -80,8 +99,10 @@ const usuariosEnBd = async () => {
 module.exports = {
     blogsIniciales,
     usuariosIniciales,
+    comentariosIniciales,
     idNoExistente,
     idUsuarioNoExistente,
     blogsEnBd,
-    usuariosEnBd
+    usuariosEnBd,
+    comentariosEnBd
 }

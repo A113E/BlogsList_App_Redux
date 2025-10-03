@@ -5,6 +5,7 @@ const cors = require('cors')
 const blogsRouter = require('./controllers/blogs') // Controlador de rutas (blogs)
 const usuariosRouter = require('./controllers/usuarios') // Controlador de rutas (usuarios)
 const loginRouter = require('./controllers/login') // Controlador de rutas (login)
+const comentariosRouter = require('./controllers/comentarios')
 const middleware = require('./utils/middleware') // Modulo que maneja los middlewares
 const logger = require('./utils/logger') // Modulo que maneja la impresión de mensajes
 const mongoose = require('mongoose')
@@ -27,12 +28,12 @@ app.use(cors()) // Permite solicitudes de cualquier origen
 app.use(express.static('build')) // Middleware para que muestre contenido estático
 app.use(express.json())
 app.use(middleware.solicitudesInfo)
-app.use(middleware.tokenExtractor)
 
 // Enrutadores
 app.use('/api/blogs', blogsRouter)
 app.use('/api/usuarios', usuariosRouter)
 app.use('/api/login', loginRouter)
+app.use('/api/comentarios', comentariosRouter)
 
 app.use(middleware.rutasInexistentes)
 app.use(middleware.manejoErrores)

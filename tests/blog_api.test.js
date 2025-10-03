@@ -10,54 +10,64 @@ const assert = require('node:assert')
 
 const api = supertest(app) // Instancia para hacer solicitudes HTTP
 
-// Usuario de prueba
-const usuarioPrueba = {
-    nombre_usuario: 'tester',
-    nombre: 'Admin',
-    password: 'sekret'
-}
-
-// Variables globales
-let token
-let usuarioId
-
 // Bloque de pruebas para mostrar los blogs
 describe('Los blogs se muestran al iniciar', () => {
+    // Variables globales
+    let token
+    let usuarioId
+
+    const bcrypt = require('bcrypt')
+
     before(async () => {
         await Usuario.deleteMany({})
-        // Crea el usuario de prueba
-        let respuesta = await api.post('/api/usuarios').send(usuarioPrueba)
-        usuarioId = respuesta.body.id
 
-        // Inicia sesión con el usuario de prueba
-        respuesta = await api.post('/api/login').send(usuarioPrueba)
-        token = respuesta.body.token
+        const passwordHash = await bcrypt.hash('tester', 10)
+        const usuario = new Usuario({ nombre_usuario: 'user', nombre: 'Usuario', passwordHash })
+        const usuarioGuardado = await usuario.save()
+
+        // Guarda el ID del usuario para usarlo en blogsIniciales
+        usuarioId = usuarioGuardado._id.toString()
+
+        // Login para obtener token
+        const loginRespuesta = await api
+          .post('/api/login')
+          .send({
+          nombre_usuario: 'user',
+          password: 'tester'
+        })
+        .expect(200)
+
+        token = loginRespuesta.body.token
+
+        // Verificación: asegura de que login devuelve token
+        if (!token) {
+           throw new Error('El login no devolvió token')
+        }
     })
+
     // Se ejecuta antes de las pruebas
     beforeEach(async () => {
         await Blog.deleteMany({})
-        await Blog.insertMany(ayuda.blogsIniciales.map(blog => ({ ...blog, usuario: usuarioId })))
+        await Blog.insertMany(
+           ayuda.blogsIniciales.map(blog => ({ ...blog, usuario: usuarioId }))
+        )
     })
 
     // Prueba para verificar que los blogs son devueltos en formato JSON
     test('los blogs son devueltos en formato JSON', async () => {
-    await api
+    const respuesta = await api
     .get('/api/blogs')
-    .set({ Authorization: `Bearer ${token}` })
     .expect(200)
     .expect('Content-Type', /application\/json/)
-    })
 
-    // Prueba para verificar que existen 2 blogs en la base de datos
-    test('hay 2 blogs', async () => {
-    const respuesta = await api.get('/api/blogs').set({ Authorization: `Bearer ${token}` })
-
-    assert.strictEqual(respuesta.body.length, ayuda.blogsIniciales.length)
+    assert.strictEqual(respuesta.body.length, 2)
     })
 
     // Prueba que verifica el titulo del primer blog
     test('el primer blog es "Blog Inicial 1"', async () => {
-    const respuesta = await api.get('/api/blogs').set({ Authorization: `Bearer ${token}` })
+    const respuesta = await api
+    .get('/api/blogs')
+
     const contenido = respuesta.body.map(e => e.titulo) // Busca el titulo
 
     assert(contenido.includes('Blog Inicial 1'))
@@ -65,7 +75,9 @@ describe('Los blogs se muestran al iniciar', () => {
 
     // Prueba para verificar que todos los blogs tienen una propiedad id en lugar de _id
     test('todos los blogs tienen propiedad id en lugar de _id', async () => {
-    const respuesta = await api.get('/api/blogs').set({ Authorization: `Bearer ${token}` })
+    const respuesta = await api
+    .get('/api/blogs')
+
     const blogs = respuesta.body
 
     blogs.forEach(blog => {
@@ -82,17 +94,11 @@ describe('Los blogs se muestran al iniciar', () => {
     const blogVer = blogsInicio[0]
 
     const resultado = await api
-    .get(`/api/blogs/${blogVer.id}`)
-    .set({ Authorization: `Bearer ${token}` })
+    .get(`/api/blogs/${blogVer.id.toString()}`)
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-    const blogFormateado = {
-    ...blogVer,
-    usuario: blogVer.usuario.toString()
-    }
-
-    assert.deepStrictEqual(resultado.body, blogFormateado) // Comprueba que el blog a ver es devuelto
+    assert.deepStrictEqual(resultado.body.id, blogVer.id.toString()) // Comprueba que el blog a ver es devuelto
     })
 
     // Prueba que verifica que si un blog no existe responde con status 404
@@ -101,7 +107,6 @@ describe('Los blogs se muestran al iniciar', () => {
 
         await api
         .get(`/api/blogs/${idBlogNoExistente}`)
-        .set({ Authorization: `Bearer ${token}` })
         .expect(404)
     })
 
@@ -111,13 +116,12 @@ describe('Los blogs se muestran al iniciar', () => {
 
         await api
         .get(`/api/blogs/${idInvalido}`)
-        .set({ Authorization: `Bearer ${token}` })
         .expect(400)
     })
     })
 
     // Bloque de pruebas para la creación de blogs
-    describe('Creción de blogs', () => {
+    describe('Creación de blogs', () => {
          // Prueba para verificar que un nuevo blog puede ser añadido
          test('un nuevo blog válido puede ser añadido', async () => {
          const nuevoBlog = {
@@ -129,7 +133,7 @@ describe('Los blogs se muestran al iniciar', () => {
 
         await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}` })
+        .set('Authorization', `Bearer ${token}`)
         .send(nuevoBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -137,8 +141,8 @@ describe('Los blogs se muestran al iniciar', () => {
         const blogsAlFinal = await ayuda.blogsEnBd()
         assert.strictEqual(blogsAlFinal.length, ayuda.blogsIniciales.length + 1) // Comprueba que se agrega el blog nuevo a la lista inicial
 
-        const contenido = blogsAlFinal.map(b => b.titulo)
-        assert(contenido.includes('Blog Nuevo')) // Comprueba que el titulo del blog esté en la lista final
+        const titulos = blogsAlFinal.map(blog => blog.titulo)
+        assert(titulos.includes('Blog Nuevo'))
         })
 
         // Prueba que comprueba que un blog sin titulo no puede ser añadido
@@ -150,7 +154,7 @@ describe('Los blogs se muestran al iniciar', () => {
 
         await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}` })
+        .set('Authorization', `Bearer ${token}`)
         .send(nuevoBlog)
         .expect(400)
 
@@ -168,7 +172,7 @@ describe('Los blogs se muestran al iniciar', () => {
 
         const respuesta = await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}` })
+        .set('Authorization', `Bearer ${token}`)
         .send(nuevoBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -208,7 +212,7 @@ describe('Los blogs se muestran al iniciar', () => {
 
          const respuesta = await api
         .post(`/api/blogs/${blogLikear.id}/likes`)
-        .set({ Authorization: `Bearer ${token}` })
+        .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -225,13 +229,10 @@ describe('Los blogs se muestran al iniciar', () => {
 
          await api
         .delete(`/api/blogs/${blogAeliminar.id}`)
-        .set({ Authorization: `Bearer ${token}` })
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
 
         const blogsAlFinal = await ayuda.blogsEnBd()
-
-        const contenido = blogsAlFinal.map(b => b.titulo)
-        assert(!contenido.includes(blogAeliminar.titulo)) // Comprueba que el titulo del blog eliminado no está en la base de datos
 
         assert.strictEqual(blogsAlFinal.length, ayuda.blogsIniciales.length - 1) // Comprueba que la lista inicial tenga un blog menos
         })

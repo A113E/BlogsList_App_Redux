@@ -1,7 +1,7 @@
 const blogsRouter = require('express').Router() // Enrutador
 // Modelos
 const Blog = require('../models/blog')
-const { usuarioExtractor } = require('../utils/middleware')
+const { usuarioExtractor, tokenExtractor } = require('../utils/middleware')
 
 
 // Ruta para obtener la lista de blogs
@@ -25,7 +25,7 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 // Ruta para eliminar un blog
-blogsRouter.delete('/:id', usuarioExtractor, async (request, response) => {
+blogsRouter.delete('/:id', usuarioExtractor, tokenExtractor, async (request, response) => {
   const usuario = request.usuario
   const id = request.params.id
    const blog = await Blog.findByIdAndDelete(id)
@@ -48,7 +48,7 @@ blogsRouter.delete('/:id', usuarioExtractor, async (request, response) => {
 })
 
 // Ruta para postear un blog
-blogsRouter.post('/', usuarioExtractor, async (request, response) => {
+blogsRouter.post('/', usuarioExtractor, tokenExtractor, async (request, response) => {
     const body = request.body // Acceder a los datos de la propiedad body
     const usuario = request.usuario // Acceder a traves del middleware
 
@@ -73,7 +73,7 @@ blogsRouter.post('/', usuarioExtractor, async (request, response) => {
 })
 
 // Ruta para actualizar un blog
-blogsRouter.put('/:id', usuarioExtractor, async (request, response) => {
+blogsRouter.put('/:id', usuarioExtractor, tokenExtractor, async (request, response) => {
   const { titulo, autor, url, likes } = request.body
   const id = request.params.id
   const usuario = request.usuario
