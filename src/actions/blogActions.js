@@ -55,7 +55,7 @@ export const blogActualizado = (blogObjeto) => {
     const blogExistente = getState().blogs.find(b => b.id === blogObjeto.id)
 
     // Llamada al servicio backend para actualizar
-    const blogActualizado = await actualizar(blogObjeto)
+    const blogActualizado = await actualizar(blogExistente)
 
     // Despacha la actualización al store
     dispatch(actualizarBlog(blogActualizado))

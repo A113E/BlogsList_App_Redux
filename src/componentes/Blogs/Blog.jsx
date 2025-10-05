@@ -1,9 +1,28 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect} from 'react';
 import { likeBlog, blogEliminado } from '../../actions/blogActions';
 import { mostrarMensaje } from '../../actions/notificacionAction';
+import { comentariosIniciales } from '../../actions/comentarioAction';
 
-const Blog = ({ blog }) => {
+import TogglableComentarios from '../Otros/TogglableComentarios';
+import ComentarioLista from '../Comentarios/ComentarioLista';
+import ComentarioForm from '../Comentarios/ComentarioForm';
+import TogglableFormularios from '../Otros/TogglableFormularios';
+
+const Blog = ({ blog, handleComentarioLike, handleEliminarComentario }) => {
     const dispatch = useDispatch() // Para cambiar el estado con las acciones
+    const usuario = useSelector(state => state.usuario)
+
+    // Selector para la longitud
+    const comentariosCantidad = useSelector(state => {
+      const lista = state.comentarios[blog.id]
+      return lista ? lista.length : 0
+    })
+
+    // Cargar comentarios al montar el componente
+    useEffect(() => {
+      dispatch(comentariosIniciales(blog.id))
+    }, [dispatch, blog.id])
  
     // Función para dar like a un blog
     const handleLikeBlog = async (id) => {
@@ -43,7 +62,10 @@ const Blog = ({ blog }) => {
     }
 
     // Función para determinar quien creo el blog
-    const creadorBlog = blog.usuario ? blog.usuario.nombre : 'Anónimo'
+    const creadorBlog = blog.usuario ? blog.usuario.nombre_usuario : 'Anónimo'
+    
+    // Función para mostrar el boton eliminar solo al usuario que lo creó
+    const puedeEliminarBlog = blog.usuario && usuario && blog.usuario._id === usuario.id
 
     return (
         <div className='blog'>
@@ -53,12 +75,31 @@ const Blog = ({ blog }) => {
             </div>
             <div className='blog-detalles'>
             <strong> <a href={blog.url}> Visitar Blog </a> </strong>  
-            <div>
             <p> { blog.likes } likes </p>
             </div>
             <div> { creadorBlog } </div>
+            <div className='blog-btns'>
             <button onClick={() => handleLikeBlog(blog.id)}>Like</button>
-            <button onClick={() => handleEliminarBlog(blog.id)}>Eliminar</button>
+            <div>
+            {puedeEliminarBlog && (
+                 <button onClick={() => handleEliminarBlog(blog.id)}>Eliminar</button>
+            )}
+            </div>
+            </div>
+            <p> { comentariosCantidad } comentarios </p>
+            <div className='comentarios-lista'>
+                <TogglableFormularios blogId={blog.id} buttonLabel="Comentar">
+                  <ComentarioForm blogId={blog.id} />
+                </TogglableFormularios>
+
+                <TogglableComentarios blogId={blog.id} buttonLabel="Ver comentarios">
+                  <ComentarioLista
+                    blogId={blog.id}
+                    usuario={blog.usuario}
+                    handleComentarioLike={handleComentarioLike}
+                    handleEliminarComentario={handleEliminarComentario}
+                  />
+                </TogglableComentarios>
             </div>
         </div>
     )

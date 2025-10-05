@@ -1,9 +1,6 @@
-import axios from 'axios';
-import { BACKEND_URL } from '../config'
-
-const baseUrl = `${BACKEND_URL}/login`
+import api from './axiosConfig'
 
 // Servicio para iniciar sesión con las credenciales correctas
 export const login = (credenciales) => {
-  return axios.post(baseUrl, credenciales).then(res => res.data)
+  return api.post(`/login`, credenciales).then(res => res.data)
 }

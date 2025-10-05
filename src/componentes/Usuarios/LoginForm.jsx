@@ -24,6 +24,7 @@ const LoginForm = () => {
             nombre_usuario: nombre_usuario.value,
             password: password.value
         }
+        console.log('🔍 LoginForm credenciales:', usuarioLogeado)
         await dispatch(iniciarUsuario(usuarioLogeado))
         dispatch(mostrarMensaje({
             mensaje: `Bienvenido ${usuarioLogeado.nombre_usuario} de vuelta ✅`,

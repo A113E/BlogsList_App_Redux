@@ -8,9 +8,13 @@ const usuariosSlice = createSlice({
         // Acción para reemplazar el array de usuarios
         setUsuarios(state, action) {
             return action.payload
+        }, 
+        // Acción para añadir un objeto de un usuario
+        appendUsuario(state, action) {
+            state.push(action.payload)
         }
     }
 })
 
-export const { setUsuarios } = usuariosSlice.actions
+export const { setUsuarios, appendUsuario } = usuariosSlice.actions
 export default usuariosSlice.reducer

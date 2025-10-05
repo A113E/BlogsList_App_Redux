@@ -1,7 +1,6 @@
 // Hooks
 import { useEffect } from 'react';
 // Thunk Action
-import { blogsInciales } from './actions/blogActions';
 import { cargarUsuarios, cerrarSesion, usuariosIniciales } from './actions/usuarioActions';
 import { useDispatch, useSelector } from 'react-redux';
 // Componentes
@@ -12,27 +11,23 @@ import BuscarBlog from './componentes/Blogs/BuscarBlog';
 import Notificacion from './componentes/Otros/Notificacion';
 import LoginForm from './componentes/Usuarios/LoginForm';
 import UsuarioLista from './componentes/Usuarios/UsuarioLista';
+import TogglableFormularios from './componentes/Otros/TogglableFormularios';
+import SiginForm from './componentes/Usuarios/SiginForm';
 
 const App = () => {
   const dispatch = useDispatch()
   const usuario = useSelector(state => state.usuario)
 
-  // Hook para cargar los blogs desde el backend
-  useEffect(() => {
-    dispatch(blogsInciales())
-  }, [])
-
   // Hook para cargar los usuarios desde el backend
   useEffect(() => {
     dispatch(usuariosIniciales())
-  })
+  }, [dispatch])
 
   // Hook para cargar el usuario en el localStorage
   useEffect(() => {
-    if (usuario) {
-      dispatch(cargarUsuarios())
-    }
-  }, [])
+    dispatch(cargarUsuarios())
+  }, [dispatch])
+
 
   return (
     <div>
@@ -40,7 +35,14 @@ const App = () => {
       <Notificacion />
       <BuscarBlog />
       {!usuario &&
-      <LoginForm />
+      <>
+      <TogglableFormularios buttonLabel="Iniciar Sesión">
+        <LoginForm />
+      </TogglableFormularios>
+      <TogglableFormularios buttonLabel="Registrarse">
+        <SiginForm />
+      </TogglableFormularios>
+      </>
       }
       {usuario &&
       <div>

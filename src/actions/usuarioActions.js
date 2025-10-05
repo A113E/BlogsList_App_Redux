@@ -2,9 +2,9 @@
 import { logUsuario, limpiarUsuario } from '../reducers/loginReducer';
 // Servicios
 import { cargarUsuario, usuarioGuardado, eliminarUsuario } from '../servicios/storage';
-import { setUsuarios } from '../reducers/usuarioReducer';
+import { setUsuarios, appendUsuario } from '../reducers/usuarioReducer';
 import { login } from '../servicios/login';
-import { obtenerUsuarios } from '../servicios/usuarios';
+import { obtenerUsuarios, crear } from '../servicios/usuarios';
 
 // Thunk action para cargar los usuarios
 export const usuariosIniciales = () => {
@@ -41,5 +41,13 @@ export const cerrarSesion = () => {
     return async dispatch => {
         eliminarUsuario() // limpia del storage
         dispatch(limpiarUsuario()) // limpia de redux
+    }
+}
+
+// Thunk para crear un usuario
+export const crearUsuario = (usuarioObjeto) => {
+    return async dispatch => {
+       const usuarioNuevo = await crear(usuarioObjeto)
+       dispatch(appendUsuario(usuarioNuevo))
     }
 }

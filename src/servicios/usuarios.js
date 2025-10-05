@@ -1,10 +1,11 @@
-import axios from 'axios';
-import { BACKEND_URL } from '../config';
-
-// Definir la baseUrl
-const baseUrl = `${BACKEND_URL}/usuarios`
+import api from './axiosConfig';
 
 // Servicio para obtener todos los usuarios
 export const obtenerUsuarios = () => {
-    return axios.get(baseUrl).then(res => res.data)
+    return api.get(`/usuarios`).then(res => res.data)
+}
+
+// Servicio para crear un usuario nuevo
+export const crear = (usuarioObjeto) => {
+    return api.post(`/usuarios`, usuarioObjeto).then(res => res.data)
 }
