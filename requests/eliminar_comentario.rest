@@ -1,0 +1,3 @@
+DELETE http://localhost:3003/api/comentarios/68e08c43c024e9cd7db65137
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21icmVfdXN1YXJpbyI6InJvb3QiLCJpZCI6IjY4YmRmZDBkNmRiOGIxYWRmN2YwNjYzNCIsImlhdCI6MTc1OTU0NTc1NCwiZXhwIjoxNzU5NTQ5MzU0fQ.h85QWlYXEJsEEdqgq-mtECqkbxzj-rwZOHgNhLexNHc

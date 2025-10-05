@@ -21,6 +21,10 @@ const usuarioSchema = new mongoose.Schema({
             ref: 'Blog'
         }
     ],
+    comentario: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comentario'
+    }
 })
 
 // Formateo de los usuarios a formato JSON

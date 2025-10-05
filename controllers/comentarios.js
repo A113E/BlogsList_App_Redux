@@ -64,4 +64,33 @@ comentariosRouter.post('/:id/likes', async (request, response) => {
     response.status(200).json(comentarioLike)
 })
 
+// Ruta para eliminar un comentario
+comentariosRouter.delete('/:id', tokenExtractor, usuarioExtractor, async (request, response) => {
+    const usuario = request.usuario
+    const id = request.params.id
+
+    // Buscar el comentario por ID
+    const comentario = await Comentario.findById(id)
+
+    if (!comentario) {
+        return response.status(404).json({ error: 'Comentario no encontrado' })
+    }
+
+    // Verifica que el usuario que creó el comentario es el mismo
+    if (comentario.usuario.toString() !== usuario._id.toString()) {
+        return response.status(403).json({ error: 'Usuario no autorizado' })
+    }
+
+    // Elimina el comentario
+    await Comentario.findByIdAndDelete(id)
+
+    // Actualiza el array de comentarios del usuario
+    if (usuario.comentarios) {
+        usuario.comentarios = usuario.comentarios.filter(c => c.toString() !== id)
+        await usuario.save()
+    }
+
+    response.status(204).end()
+})
+
 module.exports = comentariosRouter

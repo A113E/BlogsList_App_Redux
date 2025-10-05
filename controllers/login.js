@@ -13,6 +13,7 @@ loginRouter.post('/', async (request, response) => {
     }
 
     const usuario = await Usuario.findOne({ nombre_usuario }) // Encuentra al usuario proporcionado por nombre_usuario en la base de datos
+
     const passwordCorrecta = usuario === null // Verifica que la contraseña sea correcta
     ? false
     : await bcrypt.compare(password, usuario.passwordHash)

@@ -28,6 +28,7 @@ app.use(cors()) // Permite solicitudes de cualquier origen
 app.use(express.static('build')) // Middleware para que muestre contenido estático
 app.use(express.json())
 app.use(middleware.solicitudesInfo)
+app.use(middleware.tokenExtractor)
 
 // Enrutadores
 app.use('/api/blogs', blogsRouter)

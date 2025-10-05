@@ -107,6 +107,22 @@ describe('Comentarios API', () => {
         // Comprueba que el like se añadió
         assert.strictEqual(respuesta.body.likes, comentarioLike.likes + 1)
     })
+
+    // Prueba que verifica que se puede eliminar un comentario
+    test('un comentario puede ser eliminado', async () => {
+        const comentariosInicio = await ayuda.comentariosEnBd()
+        const comentarioEliminar = comentariosInicio[0]
+
+        await api
+        .delete(`/api/comentarios/${comentarioEliminar.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(204)
+
+        const comentariosFinal = await ayuda.comentariosEnBd()
+
+        // Comprueba que el comentario fue eliminado
+        assert.strictEqual(comentariosFinal.length, ayuda.comentariosIniciales.length - 1)
+    })
 })
 
 // Cierra la conexión luego de las pruebas
