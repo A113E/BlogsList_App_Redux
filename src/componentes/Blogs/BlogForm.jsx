@@ -57,6 +57,7 @@ const BlogForm = () => {
           mensaje: '❌ Error al añadir el blog',
           tipo: 'error'
         }))
+        throw error // Relanza para que el componente capture el error
       }
     }
 

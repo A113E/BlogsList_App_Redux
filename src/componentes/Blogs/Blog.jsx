@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect} from 'react';
-import { likeBlog, blogEliminado } from '../../actions/blogActions';
+import { blogsInciales, likeBlog, blogEliminado } from '../../actions/blogActions';
 import { mostrarMensaje } from '../../actions/notificacionAction';
 import { comentariosIniciales } from '../../actions/comentarioAction';
 
@@ -8,21 +8,58 @@ import TogglableComentarios from '../Otros/TogglableComentarios';
 import ComentarioLista from '../Comentarios/ComentarioLista';
 import ComentarioForm from '../Comentarios/ComentarioForm';
 import TogglableFormularios from '../Otros/TogglableFormularios';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const Blog = ({ blog, handleComentarioLike, handleEliminarComentario }) => {
+const Blog = ({ handleComentarioLike, handleEliminarComentario }) => {
     const dispatch = useDispatch() // Para cambiar el estado con las acciones
+    const navigate = useNavigate() // Para redireccionar
     const usuario = useSelector(state => state.usuario)
+    const blogs = useSelector(state => state.blogs)
+    const { id } = useParams()
 
-    // Selector para la longitud
+    // Cargar blogs si no están cargados
+    useEffect(() => {
+        if (blogs.length === 0) {
+            dispatch(blogsInciales())
+        }
+    }, [dispatch, blogs.length])
+
+    // Hook para obtener el blog
+    const blog = blogs.find(b => b.id === id)
+
     const comentariosCantidad = useSelector(state => {
-      const lista = state.comentarios[blog.id]
-      return lista ? lista.length : 0
+        if (!blog) return 0
+        const lista = state.comentarios[blog.id]
+        return lista ? lista.length : 0
     })
 
-    // Cargar comentarios al montar el componente
+    // Si el blog no se encuentra, mostrar mensaje o redireccionar
     useEffect(() => {
-      dispatch(comentariosIniciales(blog.id))
-    }, [dispatch, blog.id])
+        if (blogs.length > 0 && !blog) {
+            // Blog no encontrado después de cargar los blogs
+            dispatch(mostrarMensaje({
+                mensaje: '❌ Blog no encontrado',
+                tipo: 'error'
+            }))
+            navigate('/blogs') // Redireccionar a la lista de blogs
+        }
+    }, [blog, blogs.length, dispatch, navigate])
+
+    // Cargar comentarios solo cuando el blog esté disponible
+    useEffect(() => {
+        if (blog && blog.id) {
+            dispatch(comentariosIniciales(blog.id))
+        }
+    }, [dispatch, blog?.id]) // Usar optional chaining 
+
+    // Si el blog no está cargado, mostrar loading o null
+    if (!blog) {
+        return (
+            <div className='blog'>
+                <p>Cargando blog...</p>
+            </div>
+        )
+    }
  
     // Función para dar like a un blog
     const handleLikeBlog = async (id) => {

@@ -1,9 +1,9 @@
-import Blog from './Blog';
 import { blogsInciales } from '../../actions/blogActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-const BlogsLista = ({ usuario, handlelikeBlog, handleEliminarBlog }) => {
+const BlogsLista = () => {
     const dispatch = useDispatch()
     const blogs = useSelector(state => state.blogs)
     const { valor, tipo } = useSelector(state => state.busqueda)
@@ -11,7 +11,7 @@ const BlogsLista = ({ usuario, handlelikeBlog, handleEliminarBlog }) => {
     // Hook para cargar los blogs desde el backend
     useEffect(() => {
       dispatch(blogsInciales())
-    }, [])
+    }, [dispatch])
 
     // Filtrar y ordenar por cantidad de likes
     const blogsOrdenados = valor
@@ -30,15 +30,16 @@ const BlogsLista = ({ usuario, handlelikeBlog, handleEliminarBlog }) => {
 
     return (
         <div>
-            {blogsOrdenados.map((blog) => (
-                <Blog
-                key={blog.id}
-                blog={blog}
-                handlelikeBlog={handlelikeBlog}
-                handleEliminarBlog={handleEliminarBlog}
-                usuario={usuario}
-                />
+           <div className='blog-lista'>
+            {blogsOrdenados.map(blog => (  
+              <div key={blog.id} className="blog-resumen">
+                <h3>
+                  <Link to={`/blogs/${blog.id}`}>{blog.titulo}</Link>
+                </h3>
+                <p>{blog.autor}</p>
+              </div>
             ))}
+           </div>
         </div>
     )
 }

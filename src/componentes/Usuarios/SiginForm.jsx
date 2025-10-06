@@ -2,10 +2,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { mostrarMensaje } from '../../actions/notificacionAction';
 import { useCampo } from '../../hooks/useCampo';
 import { crearUsuario } from '../../actions/usuarioActions';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SiginForm = () => {
     const dispatch = useDispatch()
     const usuarios = useSelector(state => state.usuarios)
+    const navigate = useNavigate() // Para redireccionar
 
     // Campos del formulario
     const nombre_usuario = useCampo('text')
@@ -68,18 +70,23 @@ const SiginForm = () => {
                     tipo: 'exito'
                 }))
             limpiarFormulario()
+            navigate('/login')
         } catch (error) {
             console.error('Error al crear usuario', error)
             dispatch(mostrarMensaje({
                 mensaje: '❌ Error al registrar usuario', 
                 tipo: 'error'
             }))
+            throw error // Relanza para que el componente capture el error
         }
     }
 
     return (
         <div className='form-sigin'>
            <h2>Registrar Usuario</h2>
+           <p>
+                ¿Ya tienes una cuenta? <Link style={{ padding: '5px' }} to='/login'> Inciar Sesión </Link>
+            </p>
            <form onSubmit={añadirUsuario}>
             <div>
                 Nombre de usuario:

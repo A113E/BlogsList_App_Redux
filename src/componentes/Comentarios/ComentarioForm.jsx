@@ -37,6 +37,7 @@ const ComentarioForm = ({ blogId }) => {
             mensaje: '❌ Error al añadir comentario',
             tipo: 'error'
         }))
+        throw error // Relanza para que el componente capture el error
        }
     }
 

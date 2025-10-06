@@ -1,11 +1,19 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { cargarUsuarios } from '../../actions/usuarioActions';
 import { iniciarUsuario } from '../../actions/usuarioActions';
 import { mostrarMensaje } from '../../actions/notificacionAction';
 import { useCampo } from '../../hooks/useCampo';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
     const dispatch = useDispatch() // Disparar acciones
-    const usuario = useSelector(state => state.usuario) // Seleccionar el estado del usuario
+    const navigate = useNavigate() // Para redireccionar
+
+    // Hook para cargar el usuario en el localStorage
+    useEffect(() => {
+      dispatch(cargarUsuarios())
+    }, [dispatch])
     
     // Campos del formulario
     const nombre_usuario = useCampo('text')
@@ -20,6 +28,7 @@ const LoginForm = () => {
     // Manejador de eventos para logear usuario
     const handleLogin = async (e) => {
         e.preventDefault()
+        try { 
         const usuarioLogeado = {
             nombre_usuario: nombre_usuario.value,
             password: password.value
@@ -31,6 +40,15 @@ const LoginForm = () => {
             tipo: 'exito'
         }))
         limpiarFormulario()
+        navigate('/')
+      } catch (error) {
+        console.error('Error al inciar sesión', error)
+        dispatch(mostrarMensaje({
+            mensaje: '❌ No se pudo inciar sesión',
+            tipo: 'error'
+        }))
+        throw error // Relanza para que el componente capture el error
+      } 
     }
 
     return (
