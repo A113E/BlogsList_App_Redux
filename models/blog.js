@@ -29,7 +29,7 @@ const blogSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comentario'
     }
-})
+}, { timestamps: true }) // Activa la fecha de añadido y actualizado
 
 // Configuración de los blogs a formato JSON
 blogSchema.set('toJSON', {
@@ -39,6 +39,9 @@ blogSchema.set('toJSON', {
         delete returnedObject._id
        // Elimina el campo "__v"
        delete returnedObject.__v
+       // Oculta las fechas
+       delete returnedObject.createdAt
+       delete returnedObject.updatedAt
     }
 })
 
