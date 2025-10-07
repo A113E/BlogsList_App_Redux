@@ -3,107 +3,129 @@ import { mostrarMensaje } from '../../actions/notificacionAction';
 import { useCampo } from '../../hooks/useCampo';
 import { crearUsuario } from '../../actions/usuarioActions';
 import { Link, useNavigate } from 'react-router-dom';
+import { Form, Button } from 'react-bootstrap';
 
 const SiginForm = () => {
-    const dispatch = useDispatch()
-    const usuarios = useSelector(state => state.usuarios)
-    const navigate = useNavigate() // Para redireccionar
+  const dispatch = useDispatch();
+  const usuarios = useSelector((state) => state.usuarios);
+  const navigate = useNavigate(); // Para redireccionar
 
-    // Campos del formulario
-    const nombre_usuario = useCampo('text')
-    const nombre = useCampo('text')
-    const password = useCampo('password')
+  // Campos del formulario
+  const nombre_usuario = useCampo('text');
+  const nombre = useCampo('text');
+  const password = useCampo('password');
 
-    // Función para limpiar el formulario
-    const limpiarFormulario = () => {
-        nombre_usuario.limpiar()
-        nombre.limpiar()
-        password.limpiar()
+  // Función para limpiar el formulario
+  const limpiarFormulario = () => {
+    nombre_usuario.limpiar();
+    nombre.limpiar();
+    password.limpiar();
+  };
+
+  // Función para añadir nuevo usuario
+  const añadirUsuario = async (e) => {
+    e.preventDefault();
+    // Crear el objeto usuario
+    const usuarioObjeto = {
+      nombre_usuario: nombre_usuario.value,
+      nombre: nombre.value,
+      password: password.value,
+    };
+
+    // Validación de los campos
+    if (!usuarioObjeto.nombre) {
+      dispatch(
+        mostrarMensaje({
+          mensaje: '⚠️ Nombre es requerido',
+          tipo: 'error',
+        })
+      );
+      return;
+    }
+    if (!usuarioObjeto.nombre_usuario) {
+      dispatch(
+        mostrarMensaje({
+          mensaje: '⚠️ Nombre de usuario es requerido',
+          tipo: 'error',
+        })
+      );
+      return;
+    }
+    if (!usuarioObjeto.password) {
+      dispatch(
+        mostrarMensaje({
+          mensaje: '⚠️ Contraseña es requerida',
+          tipo: 'error',
+        })
+      );
     }
 
-    // Función para añadir nuevo usuario
-    const añadirUsuario = async (e) => {
-        e.preventDefault()
-        // Crear el objeto usuario
-        const usuarioObjeto = {
-           nombre_usuario: nombre_usuario.value,
-           nombre: nombre.value,
-           password: password.value 
-        }
-        
-        // Validación de los campos
-        if (!usuarioObjeto.nombre) {
-            dispatch(mostrarMensaje({
-                mensaje: '⚠️ Nombre es requerido',
-                tipo: 'error'
-            }))
-            return
-        }
-        if (!usuarioObjeto.nombre_usuario) {
-            dispatch(mostrarMensaje({
-                mensaje: '⚠️ Nombre de usuario es requerido',
-                tipo: 'error'
-            }))
-            return
-        }
-        if (!usuarioObjeto.password) {
-            dispatch(mostrarMensaje({
-                mensaje: '⚠️ Contraseña es requerida',
-                tipo: 'error'
-            }))
-        }
+    try {
+      // Verificar si el nombre de usuario ya existe
+      const usuarioExistenete = usuarios.find(
+        (usuario) => usuario.nombre_usuario === usuarioObjeto.nombre_usuario
+      );
 
-        try {
-            // Verificar si el nombre de usuario ya existe
-            const usuarioExistenete = usuarios.find(usuario => usuario.nombre_usuario === usuarioObjeto.nombre_usuario)
-
-            if (usuarioExistenete) {
-                dispatch(mostrarMensaje({
-                    mensaje: `El nombre de usuario ${usuarioObjeto.nombre_usuario} ya existe`,
-                    tipo: 'error'
-                }))
-                return
-            } 
-                await dispatch(crearUsuario(usuarioObjeto))
-                dispatch(mostrarMensaje({
-                    mensaje: `Usuario: ${usuarioObjeto.nombre_usuario} registrado satisfactoriamente ✅`,
-                    tipo: 'exito'
-                }))
-            limpiarFormulario()
-            navigate('/login')
-        } catch (error) {
-            console.error('Error al crear usuario', error)
-            dispatch(mostrarMensaje({
-                mensaje: '❌ Error al registrar usuario', 
-                tipo: 'error'
-            }))
-            throw error // Relanza para que el componente capture el error
-        }
+      if (usuarioExistenete) {
+        dispatch(
+          mostrarMensaje({
+            mensaje: `El nombre de usuario ${usuarioObjeto.nombre_usuario} ya existe`,
+            tipo: 'error',
+          })
+        );
+        return;
+      }
+      await dispatch(crearUsuario(usuarioObjeto));
+      dispatch(
+        mostrarMensaje({
+          mensaje: `Usuario: ${usuarioObjeto.nombre_usuario} registrado satisfactoriamente ✅`,
+          tipo: 'exito',
+        })
+      );
+      limpiarFormulario();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error al crear usuario', error);
+      dispatch(
+        mostrarMensaje({
+          mensaje: '❌ Error al registrar usuario',
+          tipo: 'error',
+        })
+      );
+      throw error; // Relanza para que el componente capture el error
     }
+  };
 
-    return (
-        <div className='form-sigin'>
-           <h2>Registrar Usuario</h2>
-           <p>
-                ¿Ya tienes una cuenta? <Link style={{ padding: '5px' }} to='/login'> Inciar Sesión </Link>
-            </p>
-           <form onSubmit={añadirUsuario}>
-            <div>
-                Nombre de usuario:
-                <input { ...nombre_usuario.inputProps } id='usuarioSig-input' />
-            </div>
-            <div>
-                Nombre Completo:
-                <input { ...nombre.inputProps } id='nombreSig-input' />
-            </div>
-            <div>
-                Contraseña:
-                <input { ...password.inputProps } id='passwordSig-input' />
-            </div>
-            <button type='submit'> Registrar </button>
-           </form>
-        </div>
-    )
-}
+  return (
+    <div className="form-sigin">
+      <h2>Registrar Usuario</h2>
+      <p>
+        ¿Ya tienes una cuenta?{' '}
+        <Link style={{ padding: '5px' }} to="/login">
+          {' '}
+          Inciar Sesión{' '}
+        </Link>
+      </p>
+      <Form onSubmit={añadirUsuario}>
+        <Form.Group>
+          <Form.Label> Nombre de usuario: </Form.Label>
+          <Form.Control {...nombre_usuario.inputProps} id="usuarioSig-input" />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label> Nombre Completo: </Form.Label>
+          <Form.Control {...nombre.inputProps} id="nombreSig-input" />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label> Contraseña: </Form.Label>
+          <Form.Control {...password.inputProps} id="passwordSig-input" />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          {' '}
+          Registrar{' '}
+        </Button>
+      </Form>
+    </div>
+  );
+};
 
-export default SiginForm
+export default SiginForm;

@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const enProd = mode === 'production'
+  const enProd = mode === 'production';
 
   return {
     plugins: [react()],
@@ -13,9 +13,9 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: 'http://localhost:3003',
           changeOrigin: true,
-          secure: false
-        }
-      }
+          secure: false,
+        },
+      },
     },
     build: {
       outDir: 'build',
@@ -24,14 +24,14 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       esbuildOptions: {
         loader: {
-          '.js': 'jsx'
-        }
-      }
+          '.js': 'jsx',
+        },
+      },
     },
     test: {
       environment: 'jsdom',
       globals: true,
-      setupFiles: './testSetup.js'
-    }
-  }
-})
+      setupFiles: './testSetup.js',
+    },
+  };
+});
