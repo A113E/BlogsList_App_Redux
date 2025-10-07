@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+.vscode
+public
+*.min.js
+/*.png
+/*.jpg

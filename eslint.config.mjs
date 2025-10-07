@@ -1,19 +1,20 @@
-import js from "@eslint/js";
-import globals from "globals";
-import stylistic from '@stylistic/eslint-plugin'
-import { defineConfig, globalIgnores } from "eslint/config";
+// eslint.config.cjs
+const js = require('@eslint/js');
+const globals = require('globals');
+const eslintConfigPrettier = require('eslint-config-prettier');
 
-
-export default defineConfig([
-  globalIgnores(["./build/"]),
-  { files: ["**/*.{js,mjs,cjs}"], plugins: { js, stylistic }, extends: ["js/recommended"], languageOptions: { globals: globals.node },
-   rules: { // Reglas para definir estilos de correcion esLint
-      eqeqeq: "error",
-      "no-trailing-spaces": "error",
-      "object-curly-spacing": ["error", "always"],
-      "arrow-spacing": ["error", { before: true, after: true }],
-      "no-console": 0,
+module.exports = [
+  js.configs.recommended,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
     },
-},
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
-]);
+    rules: {
+      'no-console': 'warn',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
+  },
+  eslintConfigPrettier,
+];
